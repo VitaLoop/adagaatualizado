@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
-import { Camera, Trophy, Award, Star, Edit, Key, Save, User, BarChart, FileSpreadsheet } from "lucide-react"
+import { Camera, Trophy, Award, Star, Edit, Key, Save, User, BarChart, FileSpreadsheet, Upload } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 
 type Achievement = {
@@ -53,6 +53,7 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -65,7 +66,8 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
     newPassword: "",
     confirmPassword: "",
   })
-  const [photoUrl, setPhotoUrl] = useState("")
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   // Estatísticas do usuário (inicializadas com valores zerados)
   const [userStats, setUserStats] = useState<UserStats>({
@@ -132,17 +134,27 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
     if (typeof window !== "undefined" && user) {
       const storedProfileData = localStorage.getItem(`adag-profile-${user.id}`)
       if (storedProfileData) {
-        const parsedData = JSON.parse(storedProfileData)
-        setProfileData({
-          ...profileData,
-          ...parsedData,
-        })
+        try {
+          const parsedData = JSON.parse(storedProfileData)
+          setProfileData({
+            ...profileData,
+            ...parsedData,
+          })
+        } catch (error) {
+          console.error("Erro ao analisar dados do perfil:", error)
+        }
       }
 
       // Carregar estatísticas
       const storedStats = localStorage.getItem(`adag-stats-${user.id}`)
       if (storedStats) {
-        setUserStats(JSON.parse(storedStats))
+        try {
+          setUserStats(JSON.parse(storedStats))
+        } catch (error) {
+          console.error("Erro ao analisar estatísticas:", error)
+          // Se não conseguir analisar, salvar os valores iniciais
+          localStorage.setItem(`adag-stats-${user.id}`, JSON.stringify(userStats))
+        }
       } else {
         // Se não existir, salvar os valores iniciais
         localStorage.setItem(`adag-stats-${user.id}`, JSON.stringify(userStats))
@@ -151,10 +163,39 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
       // Carregar conquistas
       const storedAchievements = localStorage.getItem(`adag-achievements-${user.id}`)
       if (storedAchievements) {
-        setAchievements(JSON.parse(storedAchievements))
+        try {
+          // Precisamos converter os ícones de volta para componentes React
+          const parsedAchievements = JSON.parse(storedAchievements, (key, value) => {
+            // Pular a conversão para a propriedade icon
+            if (key === "icon") return undefined
+            return value
+          })
+
+          // Mesclar os dados armazenados com os ícones atuais
+          const mergedAchievements = parsedAchievements.map((stored: any, index: number) => ({
+            ...stored,
+            icon: achievements[index]?.icon || null,
+          }))
+
+          setAchievements(mergedAchievements)
+        } catch (error) {
+          console.error("Erro ao analisar conquistas:", error)
+          // Se não conseguir analisar, salvar os valores iniciais
+          localStorage.setItem(
+            `adag-achievements-${user.id}`,
+            JSON.stringify(
+              achievements.map((a) => ({ ...a, icon: null })), // Remover ícones antes de salvar
+            ),
+          )
+        }
       } else {
-        // Se não existir, salvar os valores iniciais
-        localStorage.setItem(`adag-achievements-${user.id}`, JSON.stringify(achievements))
+        // Se não existir, salvar os valores iniciais (sem os ícones)
+        localStorage.setItem(
+          `adag-achievements-${user.id}`,
+          JSON.stringify(
+            achievements.map((a) => ({ ...a, icon: null })), // Remover ícones antes de salvar
+          ),
+        )
       }
 
       // Verificar se é o primeiro acesso e atualizar XP
@@ -194,7 +235,12 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
           dedicatedUserAchievement.unlocked =
             dedicatedUserAchievement.progress >= (dedicatedUserAchievement.maxProgress || 30)
           setAchievements(updatedAchievements)
-          localStorage.setItem(`adag-achievements-${user.id}`, JSON.stringify(updatedAchievements))
+          localStorage.setItem(
+            `adag-achievements-${user.id}`,
+            JSON.stringify(
+              updatedAchievements.map((a) => ({ ...a, icon: null })), // Remover ícones antes de salvar
+            ),
+          )
         }
       }
     }
@@ -202,7 +248,7 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
 
   // Verificar e atualizar nível com base no XP
   useEffect(() => {
-    if (user) {
+    if (user && userStats) {
       // Verificar se o usuário subiu de nível
       const level = Math.floor(userStats.xp / 100) + 1
       const nextLevelXp = level * 100
@@ -223,7 +269,12 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
           levelAchievement.progress = level
           levelAchievement.unlocked = level >= (levelAchievement.maxProgress || 5)
           setAchievements(updatedAchievements)
-          localStorage.setItem(`adag-achievements-${user.id}`, JSON.stringify(updatedAchievements))
+          localStorage.setItem(
+            `adag-achievements-${user.id}`,
+            JSON.stringify(
+              updatedAchievements.map((a) => ({ ...a, icon: null })), // Remover ícones antes de salvar
+            ),
+          )
         }
 
         // Notificar o usuário
@@ -235,7 +286,7 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
         }
       }
     }
-  }, [userStats.xp, user])
+  }, [userStats?.xp, user, achievements])
 
   // Salvar dados do perfil
   const handleSaveProfile = () => {
@@ -273,41 +324,61 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
     setIsChangingPassword(false)
   }
 
+  // Lidar com a seleção de arquivo
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+
+      // Criar URL para preview
+      const fileUrl = URL.createObjectURL(file)
+      setPreviewUrl(fileUrl)
+    }
+  }
+
+  // Abrir seletor de arquivo
+  const handleOpenFileSelector = () => {
+    fileInputRef.current?.click()
+  }
+
   // Fazer upload de foto
   const handlePhotoUpload = () => {
-    if (!photoUrl) {
+    if (!selectedFile && !previewUrl) {
       toast({
         title: "Erro",
-        description: "Por favor, insira uma URL de imagem válida.",
+        description: "Por favor, selecione uma imagem.",
         variant: "destructive",
       })
       return
     }
 
-    setProfileData({
-      ...profileData,
-      photoUrl: photoUrl,
-    })
-
-    if (typeof window !== "undefined" && user) {
-      const updatedProfile = {
+    // Se temos um arquivo selecionado, vamos usar a URL do preview
+    if (previewUrl) {
+      setProfileData({
         ...profileData,
-        photoUrl: photoUrl,
-      }
-      localStorage.setItem(`adag-profile-${user.id}`, JSON.stringify(updatedProfile))
+        photoUrl: previewUrl,
+      })
 
-      // Atualizar a foto no header
-      if (updateProfilePhoto) {
-        updateProfilePhoto(photoUrl)
+      if (typeof window !== "undefined" && user) {
+        const updatedProfile = {
+          ...profileData,
+          photoUrl: previewUrl,
+        }
+        localStorage.setItem(`adag-profile-${user.id}`, JSON.stringify(updatedProfile))
+
+        // Atualizar a foto no header
+        if (updateProfilePhoto) {
+          updateProfilePhoto(previewUrl)
+        }
       }
+
+      setSelectedFile(null)
+      setIsUploadingPhoto(false)
+      toast({
+        title: "Foto atualizada",
+        description: "Sua foto de perfil foi atualizada com sucesso.",
+      })
     }
-
-    setPhotoUrl("")
-    setIsUploadingPhoto(false)
-    toast({
-      title: "Foto atualizada",
-      description: "Sua foto de perfil foi atualizada com sucesso.",
-    })
   }
 
   // Obter iniciais do nome para o avatar
@@ -321,7 +392,7 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
   }
 
   // Calcular progresso de nível
-  const levelProgress = userStats.xp % 100 // XP dentro do nível atual
+  const levelProgress = userStats ? userStats.xp % 100 : 0 // XP dentro do nível atual
 
   return (
     <div className="space-y-6">
@@ -370,27 +441,51 @@ export function UserProfile({ updateProfilePhoto }: UserProfileProps) {
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>Alterar Foto de Perfil</DialogTitle>
-                      <DialogDescription>Insira a URL da sua nova foto de perfil.</DialogDescription>
+                      <DialogDescription>Selecione uma imagem do seu dispositivo.</DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="photoUrl">URL da Imagem</Label>
-                        <Input
-                          id="photoUrl"
-                          placeholder="https://exemplo.com/minha-foto.jpg"
-                          value={photoUrl}
-                          onChange={(e) => setPhotoUrl(e.target.value)}
+                      <div className="flex flex-col items-center gap-4">
+                        {previewUrl ? (
+                          <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-primary">
+                            <img
+                              src={previewUrl || "/placeholder.svg"}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-muted-foreground">
+                            <Upload className="h-8 w-8 text-muted-foreground" />
+                          </div>
+                        )}
+
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleFileChange}
+                          accept="image/*"
+                          className="hidden"
                         />
-                        <p className="text-xs text-muted-foreground">
-                          Você pode usar serviços como iili.io ou freeimage.host para hospedar sua imagem.
-                        </p>
+
+                        <Button variant="outline" onClick={handleOpenFileSelector} className="w-full">
+                          Selecionar Imagem
+                        </Button>
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button variant="outline" onClick={() => setIsUploadingPhoto(false)}>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsUploadingPhoto(false)
+                          setPreviewUrl(null)
+                          setSelectedFile(null)
+                        }}
+                      >
                         Cancelar
                       </Button>
-                      <Button onClick={handlePhotoUpload}>Salvar</Button>
+                      <Button onClick={handlePhotoUpload} disabled={!previewUrl}>
+                        Salvar
+                      </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
