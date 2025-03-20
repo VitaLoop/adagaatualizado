@@ -14,7 +14,6 @@ import {
   Pie,
   Cell,
 } from "recharts"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { PrintLayout } from "@/components/print-layout"
 import { Printer, FileDown } from "lucide-react"
@@ -244,285 +243,248 @@ export function RelatorioGeral({ transacoes }: RelatorioGeralProps) {
 
   return (
     <PrintLayout title="Relatório Geral">
-      <Card className="w-full shadow-sm md:shadow">
-        <CardHeader className="px-3 py-2 md:px-6 md:py-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <CardTitle className="text-lg md:text-xl">Relatório Geral</CardTitle>
-              <CardDescription className="text-xs md:text-sm">Visão geral das finanças da igreja</CardDescription>
-            </div>
-            <div className="flex gap-2 w-full sm:w-auto">
-              <Select value={anoFiltro} onValueChange={setAnoFiltro}>
-                <SelectTrigger className="w-full sm:w-32 h-9">
-                  <SelectValue placeholder="Ano" />
-                </SelectTrigger>
-                <SelectContent>
-                  {anos.map((ano) => (
-                    <SelectItem key={ano} value={ano}>
-                      {ano}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Button onClick={handleExportExcel} className="print:hidden h-9 px-2 md:px-3">
-                <FileDown className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Excel</span>
-              </Button>
-
-              <Button onClick={handleExportPDF} className="print:hidden h-9 px-2 md:px-3">
-                <FileDown className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">PDF</span>
-              </Button>
-
-              <Button onClick={handlePrint} className="print:hidden h-9 px-2 md:px-3">
-                <Printer className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Imprimir</span>
-              </Button>
-            </div>
+      <div className="w-full">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h2 className="text-lg md:text-xl font-bold">Relatório Geral</h2>
+            <p className="text-xs md:text-sm text-muted-foreground">Visão geral das finanças da igreja</p>
           </div>
-        </CardHeader>
-        <CardContent className="px-3 pb-3 md:px-6 md:pb-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-4 h-9">
-              <TabsTrigger value="resumo" className="text-xs md:text-sm">
-                Resumo
-              </TabsTrigger>
-              <TabsTrigger value="mensal" className="text-xs md:text-sm">
-                Dados Mensais
-              </TabsTrigger>
-              <TabsTrigger value="categorias" className="text-xs md:text-sm">
-                Por Categoria
-              </TabsTrigger>
-            </TabsList>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Select value={anoFiltro} onValueChange={setAnoFiltro}>
+              <SelectTrigger className="w-full sm:w-32 h-9">
+                <SelectValue placeholder="Ano" />
+              </SelectTrigger>
+              <SelectContent>
+                {anos.map((ano) => (
+                  <SelectItem key={ano} value={ano}>
+                    {ano}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            <TabsContent value="resumo" className="space-y-6">
-              {/* Cards de resumo anual */}
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4">
-                <Card className="bg-green-50 dark:bg-green-900 shadow-sm">
-                  <CardHeader className="pb-1 pt-2 px-3">
-                    <CardTitle className="text-green-700 dark:text-green-300 text-sm md:text-lg">
-                      Total de Entradas
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pb-2 px-3">
-                    <div className="text-lg md:text-2xl font-bold text-green-700 dark:text-green-300">
-                      {formatCurrency(totaisAnuais.entradas)}
-                    </div>
-                  </CardContent>
-                </Card>
+            <Button onClick={handleExportExcel} className="print:hidden h-9 px-2 md:px-3">
+              <FileDown className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Excel</span>
+            </Button>
 
-                <Card className="bg-red-50 dark:bg-red-900 shadow-sm">
-                  <CardHeader className="pb-1 pt-2 px-3">
-                    <CardTitle className="text-red-700 dark:text-red-300 text-sm md:text-lg">Total de Saídas</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pb-2 px-3">
-                    <div className="text-lg md:text-2xl font-bold text-red-700 dark:text-red-300">
-                      {formatCurrency(totaisAnuais.saidas)}
-                    </div>
-                  </CardContent>
-                </Card>
+            <Button onClick={handleExportPDF} className="print:hidden h-9 px-2 md:px-3">
+              <FileDown className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">PDF</span>
+            </Button>
 
-                <Card className="bg-blue-50 dark:bg-blue-900 shadow-sm">
-                  <CardHeader className="pb-1 pt-2 px-3">
-                    <CardTitle className="text-blue-700 dark:text-blue-300 text-sm md:text-lg">Saldo Anual</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pb-2 px-3">
-                    <div className="text-lg md:text-2xl font-bold text-blue-700 dark:text-blue-300">
-                      {formatCurrency(totaisAnuais.saldo)}
-                    </div>
-                  </CardContent>
-                </Card>
+            <Button onClick={handlePrint} className="print:hidden h-9 px-2 md:px-3">
+              <Printer className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Imprimir</span>
+            </Button>
+          </div>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-4 h-9">
+            <TabsTrigger value="resumo" className="text-xs md:text-sm">
+              Resumo
+            </TabsTrigger>
+            <TabsTrigger value="mensal" className="text-xs md:text-sm">
+              Dados Mensais
+            </TabsTrigger>
+            <TabsTrigger value="categorias" className="text-xs md:text-sm">
+              Por Categoria
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="resumo" className="space-y-6">
+            {/* Cards de resumo anual */}
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4">
+              <div className="bg-green-50 dark:bg-green-900 shadow-sm rounded-lg p-4">
+                <h3 className="text-green-700 dark:text-green-300 text-sm md:text-lg font-medium">Total de Entradas</h3>
+                <div className="text-lg md:text-2xl font-bold text-green-700 dark:text-green-300 mt-1">
+                  {formatCurrency(totaisAnuais.entradas)}
+                </div>
               </div>
 
-              {/* Gráficos de pizza */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Entradas por Categoria</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-[300px] w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={dadosPizza.entradas}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={true}
-                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                          >
-                            {dadosPizza.entradas.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS_ENTRADAS[index % COLORS_ENTRADAS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Saídas por Categoria</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-[300px] w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={dadosPizza.saidas}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={true}
-                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                          >
-                            {dadosPizza.saidas.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS_SAIDAS[index % COLORS_SAIDAS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
+              <div className="bg-red-50 dark:bg-red-900 shadow-sm rounded-lg p-4">
+                <h3 className="text-red-700 dark:text-red-300 text-sm md:text-lg font-medium">Total de Saídas</h3>
+                <div className="text-lg md:text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
+                  {formatCurrency(totaisAnuais.saidas)}
+                </div>
               </div>
-            </TabsContent>
 
-            <TabsContent value="mensal" className="space-y-6">
-              {/* Gráfico de barras mensal */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Entradas e Saídas Mensais - {anoFiltro}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[400px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={dadosPorMes}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="mes" />
-                        <YAxis />
-                        <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                        <Legend />
-                        <Bar dataKey="entradas" name="Entradas" fill="#4CAF50" />
-                        <Bar dataKey="saidas" name="Saídas" fill="#F44336" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="bg-blue-50 dark:bg-blue-900 shadow-sm rounded-lg p-4">
+                <h3 className="text-blue-700 dark:text-blue-300 text-sm md:text-lg font-medium">Saldo Anual</h3>
+                <div className="text-lg md:text-2xl font-bold text-blue-700 dark:text-blue-300 mt-1">
+                  {formatCurrency(totaisAnuais.saldo)}
+                </div>
+              </div>
+            </div>
 
-              {/* Tabela de dados mensais */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Dados Mensais Detalhados - {anoFiltro}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Mês</TableHead>
-                        <TableHead className="text-right">Entradas</TableHead>
-                        <TableHead className="text-right">Saídas</TableHead>
-                        <TableHead className="text-right">Saldo</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {dadosPorMes.map((dados) => (
-                        <TableRow key={dados.mes}>
-                          <TableCell className="font-medium">{dados.mes}</TableCell>
-                          <TableCell className="text-right text-green-600 dark:text-green-400">
-                            {formatCurrency(dados.entradas)}
-                          </TableCell>
-                          <TableCell className="text-right text-red-600 dark:text-red-400">
-                            {formatCurrency(dados.saidas)}
-                          </TableCell>
-                          <TableCell className="text-right font-medium">{formatCurrency(dados.saldo)}</TableCell>
-                        </TableRow>
-                      ))}
-                      <TableRow className="bg-muted/50">
-                        <TableCell className="font-bold">TOTAL</TableCell>
-                        <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
-                          {formatCurrency(totaisAnuais.entradas)}
+            {/* Gráficos de pizza */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border">
+                <h3 className="text-lg font-medium mb-2">Entradas por Categoria</h3>
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={dadosPizza.entradas}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={true}
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {dadosPizza.entradas.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS_ENTRADAS[index % COLORS_ENTRADAS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border">
+                <h3 className="text-lg font-medium mb-2">Saídas por Categoria</h3>
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={dadosPizza.saidas}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={true}
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {dadosPizza.saidas.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS_SAIDAS[index % COLORS_SAIDAS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="mensal" className="space-y-6">
+            {/* Gráfico de barras mensal */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium mb-2">Entradas e Saídas Mensais - {anoFiltro}</h3>
+              <div className="h-[400px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dadosPorMes}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="mes" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                    <Legend />
+                    <Bar dataKey="entradas" name="Entradas" fill="#4CAF50" />
+                    <Bar dataKey="saidas" name="Saídas" fill="#F44336" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Tabela de dados mensais */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium mb-4">Dados Mensais Detalhados - {anoFiltro}</h3>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Mês</TableHead>
+                      <TableHead className="text-right">Entradas</TableHead>
+                      <TableHead className="text-right">Saídas</TableHead>
+                      <TableHead className="text-right">Saldo</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {dadosPorMes.map((dados) => (
+                      <TableRow key={dados.mes}>
+                        <TableCell className="font-medium">{dados.mes}</TableCell>
+                        <TableCell className="text-right text-green-600 dark:text-green-400">
+                          {formatCurrency(dados.entradas)}
                         </TableCell>
-                        <TableCell className="text-right font-bold text-red-600 dark:text-red-400">
-                          {formatCurrency(totaisAnuais.saidas)}
+                        <TableCell className="text-right text-red-600 dark:text-red-400">
+                          {formatCurrency(dados.saidas)}
                         </TableCell>
-                        <TableCell className="text-right font-bold">{formatCurrency(totaisAnuais.saldo)}</TableCell>
+                        <TableCell className="text-right font-medium">{formatCurrency(dados.saldo)}</TableCell>
                       </TableRow>
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                    ))}
+                    <TableRow className="bg-muted/50">
+                      <TableCell className="font-bold">TOTAL</TableCell>
+                      <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
+                        {formatCurrency(totaisAnuais.entradas)}
+                      </TableCell>
+                      <TableCell className="text-right font-bold text-red-600 dark:text-red-400">
+                        {formatCurrency(totaisAnuais.saidas)}
+                      </TableCell>
+                      <TableCell className="text-right font-bold">{formatCurrency(totaisAnuais.saldo)}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </TabsContent>
 
-            <TabsContent value="categorias" className="space-y-6">
-              {/* Tabela de dados por categoria */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Dados por Categoria - {anoFiltro}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Categoria</TableHead>
-                        <TableHead className="text-right">Entradas</TableHead>
-                        <TableHead className="text-right">Saídas</TableHead>
-                        <TableHead className="text-right">Total</TableHead>
+          <TabsContent value="categorias" className="space-y-6">
+            {/* Tabela de dados por categoria */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium mb-4">Dados por Categoria - {anoFiltro}</h3>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Categoria</TableHead>
+                      <TableHead className="text-right">Entradas</TableHead>
+                      <TableHead className="text-right">Saídas</TableHead>
+                      <TableHead className="text-right">Total</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {dadosPorCategoria.map((dados) => (
+                      <TableRow key={dados.categoria}>
+                        <TableCell className="font-medium">{dados.categoria}</TableCell>
+                        <TableCell className="text-right text-green-600 dark:text-green-400">
+                          {formatCurrency(dados.entradas)}
+                        </TableCell>
+                        <TableCell className="text-right text-red-600 dark:text-red-400">
+                          {formatCurrency(dados.saidas)}
+                        </TableCell>
+                        <TableCell className="text-right font-medium">{formatCurrency(dados.total)}</TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {dadosPorCategoria.map((dados) => (
-                        <TableRow key={dados.categoria}>
-                          <TableCell className="font-medium">{dados.categoria}</TableCell>
-                          <TableCell className="text-right text-green-600 dark:text-green-400">
-                            {formatCurrency(dados.entradas)}
-                          </TableCell>
-                          <TableCell className="text-right text-red-600 dark:text-red-400">
-                            {formatCurrency(dados.saidas)}
-                          </TableCell>
-                          <TableCell className="text-right font-medium">{formatCurrency(dados.total)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
 
-              {/* Gráfico de barras por categoria */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Entradas e Saídas por Categoria - {anoFiltro}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[400px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={dadosPorCategoria} layout="vertical">
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" />
-                        <YAxis dataKey="categoria" type="category" width={150} />
-                        <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                        <Legend />
-                        <Bar dataKey="entradas" name="Entradas" fill="#4CAF50" />
-                        <Bar dataKey="saidas" name="Saídas" fill="#F44336" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            {/* Gráfico de barras por categoria */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium mb-2">Entradas e Saídas por Categoria - {anoFiltro}</h3>
+              <div className="h-[400px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dadosPorCategoria} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" />
+                    <YAxis dataKey="categoria" type="category" width={150} />
+                    <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                    <Legend />
+                    <Bar dataKey="entradas" name="Entradas" fill="#4CAF50" />
+                    <Bar dataKey="saidas" name="Saídas" fill="#F44336" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </PrintLayout>
   )
 }

@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react"
 import { format } from "date-fns"
 import { pt } from "date-fns/locale"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -241,186 +241,185 @@ export function DadosPlanilha({ planilhasIniciais, setPlanilhas, isAdminMode }: 
 
   return (
     <PrintLayout title="Dados Planilha">
-      <Card className="shadow-sm md:shadow">
-        <CardHeader className="px-3 py-2 md:px-6 md:py-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <CardTitle className="text-lg md:text-xl">Dados Planilha</CardTitle>
-              <CardDescription className="text-xs md:text-sm">Gerencie os dados financeiros mensais</CardDescription>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={handlePrint} className="print:hidden h-9 px-2 md:px-3">
-                <Printer className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Imprimir</span>
-              </Button>
-              <Button onClick={handleExportExcel} className="print:hidden h-9 px-2 md:px-3">
-                <FileDown className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Excel</span>
-              </Button>
-              <Button onClick={handleExportPDF} className="print:hidden h-9 px-2 md:px-3">
-                <FileDown className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">PDF</span>
-              </Button>
-            </div>
+      <div className="w-full">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h2 className="text-lg md:text-xl font-bold">Dados Planilha</h2>
+            <p className="text-xs md:text-sm text-muted-foreground">Gerencie os dados financeiros mensais</p>
           </div>
-        </CardHeader>
-        <CardContent className="px-3 pb-3 md:px-6 md:pb-6">
-          <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Pesquisar histórico..."
-                  className="pl-8"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handlePrint} className="print:hidden h-9 px-2 md:px-3">
+              <Printer className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Imprimir</span>
+            </Button>
+            <Button onClick={handleExportExcel} className="print:hidden h-9 px-2 md:px-3">
+              <FileDown className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Excel</span>
+            </Button>
+            <Button onClick={handleExportPDF} className="print:hidden h-9 px-2 md:px-3">
+              <FileDown className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">PDF</span>
+            </Button>
+          </div>
+        </div>
 
-              <Select value={anoFiltro} onValueChange={setAnoFiltro}>
-                <SelectTrigger className="w-full sm:w-32">
-                  <SelectValue placeholder="Ano" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  {anos.map((ano) => (
-                    <SelectItem key={ano} value={ano}>
-                      {ano}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Pesquisar histórico..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
 
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Nova Planilha
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Adicionar Nova Planilha</DialogTitle>
-                  <DialogDescription>Preencha os detalhes da nova planilha</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="mes">Mês</Label>
-                      <Select
-                        value={newPlanilha.mes?.toString()}
-                        onValueChange={(value) => setNewPlanilha({ ...newPlanilha, mes: Number.parseInt(value) })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecionar mês" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 12 }, (_, i) => i + 1).map((mes) => (
-                            <SelectItem key={mes} value={mes.toString()}>
-                              {getNomeMes(mes)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="ano">Ano</Label>
-                      <Select
-                        value={newPlanilha.ano?.toString()}
-                        onValueChange={(value) => setNewPlanilha({ ...newPlanilha, ano: Number.parseInt(value) })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecionar ano" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {anos.map((ano) => (
-                            <SelectItem key={ano} value={ano}>
-                              {ano}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+            <Select value={anoFiltro} onValueChange={setAnoFiltro}>
+              <SelectTrigger className="w-full sm:w-32">
+                <SelectValue placeholder="Ano" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                {anos.map((ano) => (
+                  <SelectItem key={ano} value={ano}>
+                    {ano}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Nova Planilha
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Adicionar Nova Planilha</DialogTitle>
+                <DialogDescription>Preencha os detalhes da nova planilha</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="mes">Mês</Label>
+                    <Select
+                      value={newPlanilha.mes?.toString()}
+                      onValueChange={(value) => setNewPlanilha({ ...newPlanilha, mes: Number.parseInt(value) })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar mês" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map((mes) => (
+                          <SelectItem key={mes} value={mes.toString()}>
+                            {getNomeMes(mes)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="historico">Histórico</Label>
-                    <Input
-                      id="historico"
-                      placeholder="Descrição do histórico"
-                      value={newPlanilha.historico || ""}
-                      onChange={(e) => setNewPlanilha({ ...newPlanilha, historico: e.target.value })}
-                    />
+                    <Label htmlFor="ano">Ano</Label>
+                    <Select
+                      value={newPlanilha.ano?.toString()}
+                      onValueChange={(value) => setNewPlanilha({ ...newPlanilha, ano: Number.parseInt(value) })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar ano" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {anos.map((ano) => (
+                          <SelectItem key={ano} value={ano}>
+                            {ano}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="entradas">Entradas (R$)</Label>
-                      <Input
-                        id="entradas"
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={newPlanilha.entradas || ""}
-                        onChange={(e) => handleValorChange("entradas", Number(e.target.value))}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="saidas">Saídas (R$)</Label>
-                      <Input
-                        id="saidas"
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={newPlanilha.saidas || ""}
-                        onChange={(e) => handleValorChange("saidas", Number(e.target.value))}
-                      />
-                    </div>
-                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="historico">Histórico</Label>
+                  <Input
+                    id="historico"
+                    placeholder="Descrição do histórico"
+                    value={newPlanilha.historico || ""}
+                    onChange={(e) => setNewPlanilha({ ...newPlanilha, historico: e.target.value })}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="saldo">Saldo (calculado automaticamente)</Label>
+                    <Label htmlFor="entradas">Entradas (R$)</Label>
                     <Input
-                      id="saldo"
+                      id="entradas"
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      value={(newPlanilha.entradas || 0) - (newPlanilha.saidas || 0)}
-                      disabled
+                      value={newPlanilha.entradas || ""}
+                      onChange={(e) => handleValorChange("entradas", Number(e.target.value))}
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="data">Data</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left font-normal">
-                          {newPlanilha.data ? (
-                            format(newPlanilha.data, "dd/MM/yyyy", { locale: pt })
-                          ) : (
-                            <span>Selecionar data</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={newPlanilha.data}
-                          onSelect={(date) => setNewPlanilha({ ...newPlanilha, data: date })}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Label htmlFor="saidas">Saídas (R$)</Label>
+                    <Input
+                      id="saidas"
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={newPlanilha.saidas || ""}
+                      onChange={(e) => handleValorChange("saidas", Number(e.target.value))}
+                    />
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button onClick={handleAddPlanilha}>Adicionar</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="saldo">Saldo (calculado automaticamente)</Label>
+                  <Input
+                    id="saldo"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={(newPlanilha.entradas || 0) - (newPlanilha.saidas || 0)}
+                    disabled
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="data">Data</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        {newPlanilha.data ? (
+                          format(newPlanilha.data, "dd/MM/yyyy", { locale: pt })
+                        ) : (
+                          <span>Selecionar data</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={newPlanilha.data}
+                        onSelect={(date) => setNewPlanilha({ ...newPlanilha, data: date })}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleAddPlanilha}>Adicionar</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-          {/* Tabela de planilhas - versão desktop */}
+        {/* Tabela de planilhas - versão desktop */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-4">
           <div className="rounded-md border overflow-x-auto hidden md:block">
             <Table>
               <TableHeader>
@@ -556,28 +555,28 @@ export function DadosPlanilha({ planilhasIniciais, setPlanilhas, isAdminMode }: 
               </Card>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Diálogo de confirmação para exclusão */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmar exclusão</DialogTitle>
-            <DialogDescription>
-              Tem certeza que deseja excluir esta planilha? Esta ação não pode ser desfeita.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancelar
-            </Button>
-            <Button variant="destructive" onClick={handleConfirmDelete}>
-              Excluir permanentemente
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        {/* Diálogo de confirmação para exclusão */}
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirmar exclusão</DialogTitle>
+              <DialogDescription>
+                Tem certeza que deseja excluir esta planilha? Esta ação não pode ser desfeita.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+                Cancelar
+              </Button>
+              <Button variant="destructive" onClick={handleConfirmDelete}>
+                Excluir permanentemente
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </PrintLayout>
   )
 }

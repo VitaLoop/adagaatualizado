@@ -224,9 +224,10 @@ export default function Home() {
             </div>
           </header>
 
-          <main className="flex-1 p-3 md:p-6 overflow-auto pb-20 md:pb-6">
+          {/* Removido o container mx-auto max-w-7xl para permitir largura total */}
+          <main className="flex-1 p-3 md:p-6 overflow-auto pb-20 md:pb-6 w-full">
             {activeTab === "entrada-saida" && (
-              <Card className="shadow-sm border-0 md:border">
+              <Card className="shadow-sm border-0 md:border w-full">
                 <CardHeader className="px-3 py-2 md:px-6 md:py-4">
                   <CardTitle className="text-lg md:text-2xl font-bold">Controle de Entrada/Saída</CardTitle>
                   <CardDescription className="text-xs md:text-sm">
@@ -244,7 +245,7 @@ export default function Home() {
             )}
 
             {activeTab === "relatorio-geral" && (
-              <Card className="shadow-sm border-0 md:border">
+              <Card className="shadow-sm border-0 md:border w-full">
                 <CardHeader className="px-3 py-2 md:px-6 md:py-4">
                   <CardTitle className="text-lg md:text-xl">Relatório Geral</CardTitle>
                   <CardDescription className="text-xs md:text-sm">Visão geral das finanças da igreja</CardDescription>
@@ -256,7 +257,7 @@ export default function Home() {
             )}
 
             {activeTab === "dados-planilha" && (
-              <Card className="shadow-sm border-0 md:border">
+              <Card className="shadow-sm border-0 md:border w-full">
                 <CardHeader className="px-3 py-2 md:px-6 md:py-4">
                   <CardTitle className="text-lg md:text-xl">Dados Planilha</CardTitle>
                   <CardDescription className="text-xs md:text-sm">
