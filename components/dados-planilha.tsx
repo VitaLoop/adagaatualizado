@@ -241,8 +241,8 @@ export function DadosPlanilha({ planilhasIniciais, setPlanilhas, isAdminMode }: 
 
   return (
     <PrintLayout title="Dados Planilha">
-      <div className="w-full">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 className="text-lg md:text-xl font-bold">Dados Planilha</h2>
             <p className="text-xs md:text-sm text-muted-foreground">Gerencie os dados financeiros mensais</p>
@@ -263,7 +263,7 @@ export function DadosPlanilha({ planilhasIniciais, setPlanilhas, isAdminMode }: 
           </div>
         </div>
 
-        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <div className="relative w-full sm:w-64">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />

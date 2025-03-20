@@ -243,8 +243,8 @@ export function RelatorioGeral({ transacoes }: RelatorioGeralProps) {
 
   return (
     <PrintLayout title="Relatório Geral">
-      <div className="w-full">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 className="text-lg md:text-xl font-bold">Relatório Geral</h2>
             <p className="text-xs md:text-sm text-muted-foreground">Visão geral das finanças da igreja</p>
